@@ -27,6 +27,15 @@ struct member {
     EOSLIB_SERIALIZE(member, (sender)(agreedtermsversion))
 };
 
+struct oldmember {
+    name sender;    /// Hash of agreed terms
+    string agreedterms;
+ 
+    name primary_key() const { return sender; }
+ 
+    EOSLIB_SERIALIZE(oldmember, (sender)(agreedterms))
+};
+
 struct termsinfo {
   string terms;
   string hash;
@@ -45,6 +54,8 @@ struct termsinfo {
 };
 
 typedef multi_index<N(members), member> regmembers;
+typedef multi_index<N(oldmembers), oldmember> oldmembers;
+
 typedef multi_index<N(memberterms), termsinfo> memterms;
 
 namespace eosdac {
@@ -75,6 +86,8 @@ namespace eosdac {
          void memberreg(name sender, string agreedterms);
 
          void memberunreg(name sender);
+         
+         void clear(asset sym, account_name owner, bool deleteaccounts, bool deletestats, bool deletemembers, bool deleteterms);
 
       private:
 

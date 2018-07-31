@@ -211,6 +211,38 @@ void eosdactoken::memberunreg(name sender) {
     registeredgmembers.erase(regMember);
 }
 
+    // The Following is to help with development and debugging only and should not be included in the final compiled version.
+    // Thankyou to NSJames for the following snippet - *** for development and debugging only. ***
+     template <typename T>
+     void cleanTable(uint64_t code, uint64_t account){
+         T db(code, account);
+         while(db.begin() != db.end()){
+             auto itr = --db.end();
+             db.erase(itr);
+         }
+     }
+
+    void eosdactoken::clear(asset sym, account_name owner, bool deleteaccounts, bool deletestats, bool deletemembers, bool deleteterms) {
+      
+      cleanTable<oldmembers>(_self, _self);
+
+      if (deleteaccounts) 
+         cleanTable<accounts>(_self, owner);
+      if (deletestats) 
+         cleanTable<stats>(_self, sym.symbol.name());
+      if (deletemembers) 
+         cleanTable<regmembers>(_self, _self);
+      if (deleteterms) 
+         cleanTable<memterms>(_self, _self);
+
+
+//         The above 3 code lines and the `cleanTable` function could be included to help with debugging during development.
+//         By commenting these out the lines will have no logical effect.
+//         This is a work around for there is no apparent way of using precompiled directives for eos contracts eg. #if DEBUG ...
+        print("Clearing for debugging and to reset for tests only. Should not be shipped.");
+    }
+
+
 } /// namespace eosdac
 
-EOSIO_ABI(eosdac::eosdactoken, (memberreg)(memberunreg)(create)(issue)(transfer)(burn)(newmemterms)(unlock))
+EOSIO_ABI(eosdac::eosdactoken, (memberreg)(memberunreg)(create)(issue)(transfer)(burn)(newmemterms)(unlock)(clear))
