@@ -89,10 +89,11 @@ namespace eosdac {
         }
 
 
-        name notifyContract = configs().notifycontr
+        account_name notifyContract = configs().notifycontr;
 
-        if (is_account(notifyContract) {
+        if (is_account(notifyContract)) {
             require_recipient(from, to, notifyContract);
+            eosio::print("Notifying another contract of this transfer...");
         } else {
             require_recipient(from, to);
         }
@@ -208,8 +209,11 @@ namespace eosdac {
     void eosdactoken::updateconfig(name notifycontr) {
         require_auth(_self);
 
+        eosio_assert(is_account(notifycontr), "Invalid contract attempt to be set for notifying.");
         contr_config newconfig{notifycontr};
         config_singleton.set(newconfig, _self);
+        
+        eosio::print("Updated contract config with notifycontr: ", notifycontr);
     };
 
     void eosdactoken::updateterms(uint64_t termsid, string newterms) {
