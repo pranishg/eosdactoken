@@ -87,7 +87,15 @@ namespace eosdac {
         if (st.transfer_locked) {
             require_auth(st.issuer);
         }
-        require_recipient(from, to, configs().notifycontr);
+
+
+        name notifyContract = configs().notifycontr
+
+        if (is_account(notifyContract) {
+            require_recipient(from, to, notifyContract);
+        } else {
+            require_recipient(from, to);
+        }
 
         eosio_assert(quantity.is_valid(), "invalid quantity");
         eosio_assert(quantity.amount > 0, "must transfer positive quantity");
